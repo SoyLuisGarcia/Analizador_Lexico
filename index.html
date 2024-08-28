@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANALIZADOR</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: hsl(356, 73%, 50%); 
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center; 
+            background-color: #acc9d2; 
+            border-radius: 10px; 
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
+        }
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        .flex-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center; 
+            flex-wrap: wrap;
+            margin-bottom: 20px; 
+        }
+        #codigo_fuente {
+            width: 100%;
+            height: 150px; 
+            resize: vertical;
+        }
+        .lexico, .sintactico {
+            width: calc(50% - 10px); 
+        }
+        textarea {
+            width: 100%;
+            height: 100px; 
+            resize: vertical;
+            margin-bottom: 10px; 
+        }
+        button {
+            display: block;
+            margin: 0 auto; 
+            text-align: center; 
+        }
+        .text-center {
+            text-align: center;
+            margin-bottom: 5px; 
+            padding-top: 40px;
+        }
+        .contenedor_tabla {
+            margin-top: 20px;
+            text-align: left;
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 8px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #dcbc2d;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #e0e0e0;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ANALIZADOR LÉXICO</h1>
+        <form method="POST" action="/" enctype="multipart/form-data">
+            <div class="flex-container">
+                <div class="lexico">
+                    <h2 class="small-italic">ANALIZADOR LÉXICO</h2>
+                    <textarea id="lexico_result" readonly placeholder="Análisis del lexico">{{ lexico_result }}</textarea>
+                    <button type="submit" name="lexico_button">Analizar Léxico</button>
+                </div>
+                <div class="table">
+                    <h2>Conteo de Categorías de Tokens</h2>
+                    <table>
+                        <tr>
+                            <th>Tokens</th> 
+                            <th>Cantidad</th>
+                        </tr>
+                        
+                        {% for category, count in counts.items() %}
+                            <tr>
+                                <td>{{ category }}</td>
+                                <td>{{count }}</td>
+                            </tr>
+                            {% endfor %}
+                        
+                        <tr><td colspan="2"></td></tr>
+                      
+                    </table>
+                </div>
+        
+               
+            </div>
+            <input type="file" name="file" id="file" accept=".txt" onchange="loadFile(event)" value="Subir archivo">
+            <h2 class="text-center"><i>POR FAVOR DE INGRESAR SU CÓDIGO O ARCHIVO TXT.</i></h2>
+            <textarea id="codigo_fuente" name="ingreso" placeholder="Introduce el texto o sube un archivo"></textarea>
+            <button type="button" onclick="limpiarTexto()">Eliminar código o archivo txt.</button> 
+        </form>
+    </div>
+
+    <script>
+        // Función para cargar el archivo de texto seleccionado
+        function loadFile(event) {
+            var input = event.target;
+            var reader = new FileReader();
+            reader.onload = function(){
+                var text = reader.result;
+                document.getElementById('codigo_fuente').value = text;
+                localStorage.setItem('codigo_fuente', text);
+            };
+            reader.readAsText(input.files[0]);
+            // Cargar los resultados del análisis léxico y sintáctico
+            var lexicoResult = localStorage.getItem('lexico_result');
+            if (lexicoResult !== null) {
+                document.getElementById('lexico_result').value = lexicoResult;
+            }
+            var sintacticoResult = localStorage.getItem('sintactico_result');
+            if (sintacticoResult !== null) {
+                document.getElementById('sintactico_result').value = sintacticoResult;
+            }
+        };
+    
+    
+        function limpiarTexto() {
+            document.getElementById('codigo_fuente').value = '';
+            document.getElementById('lexico_result').value = '';
+            document.getElementById('sintactico_result').value = '';
+            localStorage.removeItem('codigo_fuente');
+            localStorage.removeItem('lexico_result'); 
+            localStorage.removeItem('sintactico_result'); 
+        }
+    
+        // Cargar el texto guardado en el almacenamiento local al cargar la página
+        window.onload = function() {
+            var storedText = localStorage.getItem('codigo_fuente');
+            if (storedText !== null) {
+                document.getElementById('codigo_fuente').value = storedText;
+            }
+        };
+    
+        // Evento para guardar el texto editado en el almacenamiento local
+        document.getElementById('codigo_fuente').addEventListener('input', function() {
+            var editedText = this.value;
+            localStorage.setItem('codigo_fuente', editedText);
+        });
+    </script>
+    
+</body>
+</html>
+
+
+
+
